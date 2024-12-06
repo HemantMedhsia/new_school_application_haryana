@@ -13,6 +13,7 @@ import {
   FaDollarSign,
   FaCogs,
   FaFileUpload,
+  FaBus
 } from "react-icons/fa";
 import { BsDatabaseFillUp } from "react-icons/bs";
 import { FaIdCard, FaRegCircle } from "react-icons/fa6";
@@ -414,7 +415,7 @@ export const navigation = [
   {
     name: "Transport",
     to: "/transpost",
-    icon: FaDollarSign,
+    icon: FaBus,
     current: false,
     roles: ["Admin"],
     children: [
@@ -426,25 +427,13 @@ export const navigation = [
       },
       {
         name: "Add Route",
-        to: "/school/fees-installment",
+        to: "/school/add-transport-route",
         icon: FaRegCircle,
         roles: ["Admin"],
       },
       {
-        name: "Student Fees",
-        to: "/school/student-fees-page",
-        icon: FaRegCircle,
-        roles: ["Admin"],
-      },
-      {
-        name: "Class Fee Records",
-        to: "/school/class-fees-record",
-        icon: FaRegCircle,
-        roles: ["Admin"],
-      },
-      {
-        name: "Monthly Fees Payment",
-        to: "/school/monthly-fees-payment",
+        name: "Assing Transport",
+        to: "/school/assign-transport",
         icon: FaRegCircle,
         roles: ["Admin"],
       },
