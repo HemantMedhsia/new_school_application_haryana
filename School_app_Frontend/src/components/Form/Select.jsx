@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 const SearchableSelect = ({
   labelName,
   name,
-  value="",
+  value = "",
   onChange,
   options,
   placeholder = "Select",
@@ -14,7 +14,7 @@ const SearchableSelect = ({
 
   // Sync searchTerm with external value prop
   useEffect(() => {
-    const selectedOption = options.find(option => option.id === value);
+    const selectedOption = options.find((option) => option.id === value);
     setSearchTerm(selectedOption ? selectedOption.name : ""); // Update searchTerm based on value prop
   }, [value, options]);
 
@@ -73,7 +73,7 @@ const SearchableSelect = ({
         className="bg-[#283046] text-sm text-[#FFFFFF] mt-2 w-full h-9 rounded-[5px] border-2 border-[#39424E] focus:border-[#6B46C1] outline-none px-2"
       />
       {showDropdown && (
-        <div className="absolute z-10 mt-1 w-full bg-[#283046] border border-[#39424E] rounded-md shadow-lg max-h-40 overflow-y-auto">
+        <div className="absolute top-14 z-10 mt-1 w-full bg-[#283046] border border-[#39424E] rounded-md shadow-lg max-h-40 overflow-y-auto">
           {filteredOptions?.length > 0 ? (
             filteredOptions?.map((option) => (
               <div

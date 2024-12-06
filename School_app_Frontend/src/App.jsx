@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import MobileWarning from "./pages/Mobile/MobileWarning.jsx";
 import Layout from "./layouts/Layout.jsx";
-import LoginPage from "./pages/LoginPage/LoginPage.jsx";
 import Testing from "./pages/Testing/Testing.jsx";
 import Dashboard from "./layouts/Navbar/Dashboard.jsx";
 import RoleBasedAccess from "./pages/RoleBase/RoleBasedAccess.jsx";
@@ -82,6 +81,9 @@ import StudentAddFillForm from "./pages/SchoolForm/StudentAddFillForm.jsx";
 import StudentPreFilledFrom from "./pages/SchoolForm/StudentPreFilledFrom.jsx";
 import TeacherBulkData from "./pages/UploadFiles/TeacherBulkData.jsx";
 import StaffBulkData from "./pages/UploadFiles/StaffBulkData.jsx";
+import AddTransport from "./pages/Transport/AddTransport.jsx";
+import AddRoutes from "./pages/Transport/AddRoutes.jsx";
+import AssignTransport from "./pages/Transport/AssignTransport.jsx";
 
 const App = () => {
   const { userRole, authToken, loading } = useAuth();
@@ -763,6 +765,30 @@ const App = () => {
             element={
               <RoleBasedAccess allowedRoles={["Admin"]}>
                 <StaffBulkData />
+              </RoleBasedAccess>
+            }
+          />
+          <Route
+            path="/school/add-transport"
+            element={
+              <RoleBasedAccess allowedRoles={["Admin"]}>
+                <AddTransport />
+              </RoleBasedAccess>
+            }
+          />
+          <Route
+            path="/school/add-transport-route"
+            element={
+              <RoleBasedAccess allowedRoles={["Admin"]}>
+                <AddRoutes />
+              </RoleBasedAccess>
+            }
+          />
+          <Route
+            path="/school/assign-transport"
+            element={
+              <RoleBasedAccess allowedRoles={["Admin"]}>
+                <AssignTransport />
               </RoleBasedAccess>
             }
           />

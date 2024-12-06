@@ -24,7 +24,7 @@ const Notice = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const  handleSubmit = async (e) => {
     const schoolId = import.meta.env.VITE_SchoolId;
     // const schoolId = localStorage.getItem("schoolId");
     if (!schoolId) {
