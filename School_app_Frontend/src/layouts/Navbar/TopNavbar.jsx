@@ -8,7 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthProvider";
 import { jwtDecode } from "jwt-decode";
 import DarkModeToggle from "../../common/DarkModeToggle/DarkModeToggle";
-import logo from "../../assets/AradhyaTech_logo.png";
+import logo from "../../assets/titleLogo.png";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 

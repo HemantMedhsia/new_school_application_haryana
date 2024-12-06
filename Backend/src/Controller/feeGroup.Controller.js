@@ -261,7 +261,12 @@ export const getFeeGroupById = wrapAsync(async (req, res, next) => {
         .json(new ApiResponse(200, feeGroup, "Fee group fetched."));
 });
 
-const manageInstallmentForClass = async (classId, installment, dueDate) => {
+const manageInstallmentForClass = async (
+    classId,
+    installment,
+    dueDate,
+    res
+) => {
     let feeGroup = await FeeGroup.findOne({ class: classId });
     if (!feeGroup) {
         res.status(404).json(

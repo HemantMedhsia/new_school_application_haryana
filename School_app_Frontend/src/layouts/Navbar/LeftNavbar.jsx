@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import aradhyaTechLogo from "../../assets/AradhyaTech_logo.png";
+import aradhyaTechLogo from "../../assets/pngegg.png";
 import NavbarDropdown from "./NavbarData/NavbarDropdown.jsx";
 import NavbarItem from "./NavbarData/NavbarItem.jsx";
 import { navigation } from "./NavbarData/NavigationData.js";

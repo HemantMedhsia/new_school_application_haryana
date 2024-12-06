@@ -19,6 +19,7 @@ const staffSchema = new mongoose.Schema({
             "Office Staff",
             "Librarian",
             "Other",
+            "Driver",
         ],
         required: true,
     },
