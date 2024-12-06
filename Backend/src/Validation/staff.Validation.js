@@ -11,7 +11,8 @@ export const staffValidationSchema = Joi.object({
             "Peon",
             "Office Staff",
             "Librarian",
-            "Other"
+            "Other",
+            "Driver"
         )
         .required(),
     age: Joi.number().required(),

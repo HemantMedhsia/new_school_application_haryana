@@ -10,8 +10,6 @@ const FeeManagement = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      toast.info("Loading data, please wait..."); // Notify data loading
-
       try {
         const classesResponse = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/all-class`
@@ -50,7 +48,7 @@ const FeeManagement = () => {
               otherFee: "",
             }));
             setFeeData(initialFeeData);
-            toast.success("Classes loaded successfully.");
+            // toast.success("Classes loaded successfully.");
           }
         } else {
           toast.error("Failed to fetch classes.");
@@ -108,8 +106,6 @@ const FeeManagement = () => {
   };
 
   const handleSubmit = async () => {
-    toast.info("Submitting data, please wait...");
-
     const formattedFeeData = feeData.map(
       ({
         feeGroupId,
@@ -153,13 +149,26 @@ const FeeManagement = () => {
       }
     } catch (error) {
       console.error("Error submitting fees:", error);
-      toast.error("An error occurred while submitting fees.");
+      const serverMessage =
+        error.response && error.response.data && error.response.data.message;
+
+      if (
+        serverMessage &&
+        serverMessage.includes(
+          "Fee group already exists for the following class(es):"
+        )
+      ) {
+        toast.error(
+          "You cannot create a fee group again; please update it instead."
+        );
+      } else {
+        toast.error("An error occurred while submitting fees.");
+      }
     }
   };
 
   return (
     <div className="p-6">
-      <ToastContainer />
       <h1 className="text-3xl font-bold mb-4">
         {isUpdateMode ? "Update Fee Structure" : "Create Fee Structure"}
       </h1>
@@ -188,6 +197,7 @@ const FeeManagement = () => {
           </button>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

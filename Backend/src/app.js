@@ -32,6 +32,8 @@ import { ContactRoute } from "./Routes/Contact.Route.js";
 import { siblingRouter } from "./Routes/sibling.Route.js";
 import { feeGroupRouter } from "./Routes/feeGroup.Route.js";
 import { studentFeesRouter } from "./Routes/studentFees.Route.js";
+import { registerBusRoute } from "./Routes/registerBus.Route.js";
+import { busRouteRoute } from "./Routes/busRoute.Route.js";
 
 const app = express();
 
@@ -109,6 +111,8 @@ app.use("/api", ContactRoute);
 app.use("/api", siblingRouter);
 app.use("/api", feeGroupRouter);
 app.use("/api", studentFeesRouter);
+app.use("/api", registerBusRoute);
+app.use("/api", busRouteRoute);
 
 // Global error handling middleware
 app.use((err, req, res, next) => {

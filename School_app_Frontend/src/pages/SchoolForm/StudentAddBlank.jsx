@@ -1,6 +1,5 @@
 // StudentAddForm.js
 import React, { useRef } from "react";
-import logo from "../../assets/pngegg_b2.png";
 import logo2 from "../../assets/logo.png";
 import { useReactToPrint } from "react-to-print";
 import "./style.css";
