@@ -800,7 +800,7 @@ const App = () => {
                 <PreviousYearFee />
               </RoleBasedAccess>
             }
-          />f
+          />
         </Route>
         <Route path="*" element={<PyramidLoader />} />
         <Route path="/error" element={<AnimatedErrorPage />} />

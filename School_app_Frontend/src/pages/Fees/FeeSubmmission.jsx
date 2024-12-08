@@ -1,28 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const FeeSubmission = () => {
   const { studentId } = useParams();
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [feeDetails, setFeeDetails] = useState([]);
   const [studentDetails, setStudentDetails] = useState(null);
   const [totalFees, setTotalFees] = useState(0);
   const [paymentHistory, setPaymentHistory] = useState([]);
+  const [tran, setTran] = useState();
 
   // Mapping between feeHeader identifiers and display names
   const feeHeaderMap = {
-    tuitionFee: 'Tuition Fee',
-    admissionFee: 'Admission Fee',
-    annualFee: 'Annual Fee',
-    otherFee: 'Other Fee',
+    tuitionFee: "Tuition Fee",
+    admissionFee: "Admission Fee",
+    annualFee: "Annual Fee",
+    otherFee: "Other Fee",
+    previousBalance: "Previous Year Balance",
+    transportFee: `Transport Fee monthly (${tran/11}) `,
   };
 
   const feeHeaderMapReverse = {
-    'Tuition Fee (Monthly)': 'tuitionFee',
-    'Admission Fee': 'admissionFee',
-    'Annual Fee': 'annualFee',
-    'Other Fee': 'otherFee',
+    "Tuition Fee (Monthly)": "tuitionFee",
+    "Admission Fee": "admissionFee",
+    "Annual Fee": "annualFee",
+    "Other Fee": "otherFee",
+    previousBalance: "Previous Year Balance",
+    transportFee: "Transport Fee",
   };
 
   useEffect(() => {
@@ -36,15 +41,16 @@ const FeeSubmission = () => {
         `${import.meta.env.VITE_BACKEND_URL}/api/get-student-fee/${studentId}`
       );
       if (response.data && response.data.success) {
-        const data = response.data.data; // Adjusted to match new API response structure
+        const data = await response.data.data; // Adjusted to match new API response structure
         setStudentDetails(data.student);
         initializeFeeDetails(data.studentFee);
+        setTran(data.student.feeGroup.fees.transportFee);
         setPaymentHistory(data.studentFee.paymentHistory);
       } else {
-        console.error('Failed to fetch student fee details');
+        console.error("Failed to fetch student fee details");
       }
     } catch (error) {
-      console.error('Error fetching student fee details:', error);
+      console.error("Error fetching student fee details:", error);
     }
   };
 
@@ -72,9 +78,12 @@ const FeeSubmission = () => {
     const month = e.target.value;
     const multiplier = getMonthMultiplier(month);
     const updatedFeeDetails = feeDetails.map((fee) => {
-      if (fee.feeHeader === 'tuitionFee') {
+      if (fee.feeHeader === "tuitionFee") {
         const totalAmount = (parseFloat(fee.originalAmount) / 12) * multiplier;
-        const dueAmount = Math.max(totalAmount - fee.paidAmount - parseFloat(fee.discount || 0), 0);
+        const dueAmount = Math.max(
+          totalAmount - fee.paidAmount - parseFloat(fee.discount || 0),
+          0
+        );
         return {
           ...fee,
           totalAmount: totalAmount.toFixed(2),
@@ -82,6 +91,7 @@ const FeeSubmission = () => {
           payingAmount: dueAmount.toFixed(2),
         };
       }
+
       return fee;
     });
     setSelectedMonth(month);
@@ -91,18 +101,18 @@ const FeeSubmission = () => {
 
   const getMonthMultiplier = (month) => {
     const months = [
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-      'January',
-      'February',
-      'March', 
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+      "January",
+      "February",
+      "March",
     ];
     return months.indexOf(month) + 1;
   };
@@ -112,25 +122,27 @@ const FeeSubmission = () => {
     const parsedValue = parseFloat(value);
     updatedFeeDetails[index][field] = !isNaN(parsedValue) ? parsedValue : 0;
 
-    if (field === 'discount' || field === 'payingAmount') {
-      const totalAmount = parseFloat(updatedFeeDetails[index]['totalAmount']) || 0;
-      let discount = parseFloat(updatedFeeDetails[index]['discount']) || 0;
-      const paidAmount = parseFloat(updatedFeeDetails[index]['paidAmount']) || 0;
+    if (field === "discount" || field === "payingAmount") {
+      const totalAmount =
+        parseFloat(updatedFeeDetails[index]["totalAmount"]) || 0;
+      let discount = parseFloat(updatedFeeDetails[index]["discount"]) || 0;
+      const paidAmount =
+        parseFloat(updatedFeeDetails[index]["paidAmount"]) || 0;
 
       // Ensure discount doesn't exceed the remaining amount after payments
       if (discount > totalAmount - paidAmount) {
         discount = totalAmount - paidAmount;
-        updatedFeeDetails[index]['discount'] = discount;
+        updatedFeeDetails[index]["discount"] = discount;
       }
 
       // Calculate due amount considering total amount, paid amount, and discount
       let dueAmount = totalAmount - paidAmount - discount;
       dueAmount = dueAmount > 0 ? dueAmount : 0;
-      updatedFeeDetails[index]['dueAmount'] = dueAmount;
+      updatedFeeDetails[index]["dueAmount"] = dueAmount;
 
       // Auto-fill payingAmount when dueAmount changes, unless payingAmount was manually set
-      if (field !== 'payingAmount') {
-        updatedFeeDetails[index]['payingAmount'] = dueAmount;
+      if (field !== "payingAmount") {
+        updatedFeeDetails[index]["payingAmount"] = dueAmount;
       }
     }
 
@@ -156,12 +168,12 @@ const FeeSubmission = () => {
       feeDetails: feeDetails.map((fee) => ({
         feeHeader: fee.header,
         discountAmount: Number(fee.discount) || 0,
-        discountGivenBy: fee.discount > 0 ? 'Principal' : '', // Adjust as needed
+        discountGivenBy: fee.discount > 0 ? "Principal" : "", // Adjust as needed
         amountPaying: Number(fee.payingAmount) || 0,
       })),
-      paymentDate: new Date().toISOString().split('T')[0],
-      paymentMode: 'Cash', // Can be changed to get input from user
-      remarks: 'Payment for multiple fee headers.',
+      paymentDate: new Date().toISOString().split("T")[0],
+      paymentMode: "Cash", // Can be changed to get input from user
+      remarks: "Payment for multiple fee headers.",
       totalPayingAmount: totalFees,
     };
 
@@ -171,17 +183,17 @@ const FeeSubmission = () => {
         payload
       );
       if (response.data && response.data.statusCode === 200) {
-        console.log('Fee submission successful:', response.data);
-        alert('Fee submitted successfully');
+        console.log("Fee submission successful:", response.data);
+        alert("Fee submitted successfully");
         // Refresh the fee details after successful submission
         fetchStudentFeeDetails();
       } else {
-        console.error('Failed to submit fee:', response.data);
-        alert('Failed to submit fee');
+        console.error("Failed to submit fee:", response.data);
+        alert("Failed to submit fee");
       }
     } catch (error) {
-      console.error('Error submitting fee:', error);
-      alert('Error submitting fee');
+      console.error("Error submitting fee:", error);
+      alert("Error submitting fee");
     }
   };
 
@@ -193,11 +205,15 @@ const FeeSubmission = () => {
           <h3 className="text-2xl font-semibold text-[#65fa9e]">
             Student Name: {studentDetails.name}
           </h3>
-          <p className="text-xl text-gray-300">Class: {studentDetails.class.name}</p>
+          <p className="text-xl text-gray-300">
+            Class: {studentDetails.class.name}
+          </p>
         </div>
       )}
       <div className="mb-6">
-        <label className="block mb-2 font-semibold text-[#65fa9e]">Select Month</label>
+        <label className="block mb-2 font-semibold text-[#65fa9e]">
+          Select Month
+        </label>
         <select
           value={selectedMonth}
           onChange={handleMonthChange}
@@ -205,18 +221,18 @@ const FeeSubmission = () => {
         >
           <option value="">Select a month</option>
           {[
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December',
-            'January',
-            'February',
-            'March',
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+            "January",
+            "February",
+            "March",
           ].map((month) => (
             <option key={month} value={month}>
               {month}
@@ -229,30 +245,48 @@ const FeeSubmission = () => {
         <table className="min-w-full bg-[#283046] text-gray-100 rounded-lg">
           <thead>
             <tr className="bg-[#65fa9e] text-gray-900">
-              <th className="py-3 px-4 border border-[#39424E] text-left">Fee Header</th>
-              <th className="py-3 px-4 border border-[#39424E] text-left">Total Amount</th>
-              <th className="py-3 px-4 border border-[#39424E] text-left">Paid Amount</th>
-              <th className="py-3 px-4 border border-[#39424E] text-left">Due Amount</th>
-              <th className="py-3 px-4 border border-[#39424E] text-left">Discount</th>
-              <th className="py-3 px-4 border border-[#39424E] text-left">Amount Paying</th>
+              <th className="py-3 px-4 border border-[#39424E] text-left">
+                Fee Header
+              </th>
+              <th className="py-3 px-4 border border-[#39424E] text-left">
+                Total Amount
+              </th>
+              <th className="py-3 px-4 border border-[#39424E] text-left">
+                Paid Amount
+              </th>
+              <th className="py-3 px-4 border border-[#39424E] text-left">
+                Due Amount
+              </th>
+              <th className="py-3 px-4 border border-[#39424E] text-left">
+                Discount
+              </th>
+              <th className="py-3 px-4 border border-[#39424E] text-left">
+                Amount Paying
+              </th>
             </tr>
           </thead>
           <tbody>
             {feeDetails.map((fee, index) => (
               <tr key={index} className="hover:bg-[#39424E]">
-                <td className="py-3 px-4 border border-[#39424E]">{fee.header}</td>
+                <td className="py-3 px-4 border border-[#39424E]">
+                  {fee.header}
+                </td>
                 <td className="py-3 px-4 border border-[#39424E]">
                   {fee.totalAmount ? fee.totalAmount : fee.originalAmount}
                 </td>
                 <td className="py-3 px-4 border border-[#39424E]">
                   {fee.paidAmount.toFixed(2)}
                 </td>
-                <td className="py-3 px-4 border border-[#39424E]">{fee.dueAmount}</td>
+                <td className="py-3 px-4 border border-[#39424E]">
+                  {fee.dueAmount}
+                </td>
                 <td className="py-3 px-4 border border-[#39424E]">
                   <input
                     type="number"
                     value={fee.discount}
-                    onChange={(e) => handleInputChange(index, 'discount', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, "discount", e.target.value)
+                    }
                     className="p-2 border border-[#39424E] rounded w-full bg-gray-100 text-gray-900 focus:border-[#65fa9e]"
                     placeholder="Discount Amount"
                   />
@@ -261,7 +295,9 @@ const FeeSubmission = () => {
                   <input
                     type="number"
                     value={fee.payingAmount}
-                    onChange={(e) => handleInputChange(index, 'payingAmount', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, "payingAmount", e.target.value)
+                    }
                     className="p-2 border border-[#39424E] rounded w-full bg-gray-100 text-gray-900 focus:border-[#65fa9e]"
                     placeholder="Paying Amount"
                   />
@@ -273,15 +309,25 @@ const FeeSubmission = () => {
       </div>
 
       <div className="mt-8">
-        <h3 className="text-2xl font-semibold text-[#65fa9e] mb-4">Payment History</h3>
+        <h3 className="text-2xl font-semibold text-[#65fa9e] mb-4">
+          Payment History
+        </h3>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-[#283046] text-gray-100 rounded-lg">
             <thead>
               <tr className="bg-[#65fa9e] text-gray-900">
-                <th className="py-3 px-4 border border-[#39424E] text-left">Payment Date</th>
-                <th className="py-3 px-4 border border-[#39424E] text-left">Fee Header</th>
-                <th className="py-3 px-4 border border-[#39424E] text-left">Amount</th>
-                <th className="py-3 px-4 border border-[#39424E] text-left">Receipt Number</th>
+                <th className="py-3 px-4 border border-[#39424E] text-left">
+                  Payment Date
+                </th>
+                <th className="py-3 px-4 border border-[#39424E] text-left">
+                  Fee Header
+                </th>
+                <th className="py-3 px-4 border border-[#39424E] text-left">
+                  Amount
+                </th>
+                <th className="py-3 px-4 border border-[#39424E] text-left">
+                  Receipt Number
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -290,7 +336,9 @@ const FeeSubmission = () => {
                   <td className="py-3 px-4 border border-[#39424E]">
                     {new Date(payment.paymentDate).toLocaleDateString()}
                   </td>
-                  <td className="py-3 px-4 border border-[#39424E]">{payment.feeHeader}</td>
+                  <td className="py-3 px-4 border border-[#39424E]">
+                    {payment.feeHeader}
+                  </td>
                   <td className="py-3 px-4 border border-[#39424E]">
                     {payment.amount.toFixed(2)}
                   </td>
@@ -304,7 +352,9 @@ const FeeSubmission = () => {
         </div>
       </div>
 
-      <div className="mt-6 text-xl font-bold text-[#65fa9e]">Total Fees: {totalFees}</div>
+      <div className="mt-6 text-xl font-bold text-[#65fa9e]">
+        Total Fees: {totalFees}
+      </div>
 
       <div className="mt-8">
         <button
