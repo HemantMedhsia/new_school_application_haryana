@@ -48,53 +48,7 @@ const StudentInfo = () => {
 
   useEffect(() => {
     fetchDropdownData();
-    // handleFilter();
   }, []);
-
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await getAPI("getAllStudents", {}, setAllStudentData);
-
-  //     if (response.data && Array.isArray(response.data)) {
-  //       const updatedResponse = await Promise.all(
-  //         response.data.map(async (student) => {
-  //           try {
-  //             const { data } = await axios.get(
-  //               `${
-  //                 import.meta.env.VITE_BACKEND_URL
-  //               }/api/get-student-attendance-summary/${student._id}`
-  //             );
-
-  //             const attendancePercentage = data?.data?.percentage;
-  //             return {
-  //               ...student,
-  //               attendancePercentage: attendancePercentage,
-  //               grade: "A", // Example grade
-  //             };
-  //           } catch (error) {
-  //             console.error(
-  //               `Error fetching attendance for student ${student._id}:`,
-  //               error
-  //             );
-  //             return {
-  //               ...student,
-  //               attendancePercentage: 0,
-  //               grade: "A",
-  //             };
-  //           }
-  //         })
-  //       );
-
-  //       setAllStudentData(updatedResponse);
-  //       setFilteredStudentData(updatedResponse);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching student data:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const clearFilters = () => {
     setSelectedClass(null);

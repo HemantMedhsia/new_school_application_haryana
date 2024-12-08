@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import FormSection from "../../components/Form/FormSection";
 import Input from "../../components/Form/Input";
 import { useState } from "react";
 import SearchableSelect from "../../components/Form/Select";
 import FormButton from "../../components/Form/FormButton";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 const AddTransport = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +17,33 @@ const AddTransport = () => {
     pollutionExpiryDate: "",
     selectDriver: "",
   });
+  const [driverOptions, setDriverOptions] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/drivers`)
+      .then((response) => {
+        setDriverOptions(
+          response.data.map((driver) => ({
+            id: driver._id,
+            name: driver.name,
+          }))
+        );
+      })
+      .catch((error) => {
+        setDriverOptions([
+          {
+            id: "6734aa7bc2188df64817294f",
+            name: "John Doe",
+          },
+          {
+            id: "6734aa7bc2188df64817294f",
+            name: "Jane Smith",
+          },
+        ]);
+        console.error(error);
+      });
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -25,11 +54,32 @@ const AddTransport = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    const payload = {
+      busNo: formData.busNumber,
+      kmReading: parseFloat(formData.kmReading),
+      serviceOnKm: parseFloat(formData.serviceOnKm),
+      insuranceExpiry: formData.insurenceExpiryDate,
+      milageApprox: parseFloat(formData.approxMileage),
+      polluationExpiry: formData.pollutionExpiryDate,
+      driverId: formData.selectDriver,
+    };
+
+    axios
+      .post(`${import.meta.env.VITE_BACKEND_URL}/api/registerbus`, payload)
+      .then((res) => {
+        console.log(res);
+        toast.success("Transport added successfully");
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to add transport");
+      });
   };
 
   return (
     <div className="w-full bg-[#283046] rounded-md p-12">
+      <ToastContainer />
       <FormSection title={"Add Transport"}>
         <Input
           labelName="Bus / Van Number"
@@ -80,13 +130,10 @@ const AddTransport = () => {
           name="selectDriver"
           placeholder="Select Bus / Van Driver"
           value={formData.selectDriver}
-          onChange={handleChange}
-          options={[
-            { id: "Event", name: "Event" },
-            { id: "Holiday", name: "Holiday" },
-            { id: "Announcement", name: "Announcement" },
-            { id: "General", name: "General" },
-          ]}
+          onChange={(e) =>
+            setFormData({ ...formData, selectDriver: e.target.value })
+          }
+          options={driverOptions}
         />
       </FormSection>
       <div className="flex gap-2 flex-row-reverse" onClick={handleSubmit}>
