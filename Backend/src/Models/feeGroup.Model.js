@@ -23,7 +23,16 @@ const feeGroupSchema = new mongoose.Schema({
             type: Number,
             required: false,
         },
+        previousBalance: {
+            type: Number,
+            default: 0,
+        },
+        transportFee: {
+            type: Number,
+            default: 0,
+        },
     },
+
     installmentDates: [
         {
             month: {

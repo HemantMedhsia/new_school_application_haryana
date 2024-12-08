@@ -5,6 +5,7 @@ import {
     getAllStaffs,
     getAttendanceAndStaffCount,
     getStaffById,
+    getStaffByType,
     loginStaff,
     refreshAccessTokenStaff,
     updateStaff,
@@ -30,4 +31,6 @@ router.post(
     uploadMiddleware,
     uploadBulkStaffData
 );
+
+router.get("/get-staff-by-type/:type", getStaffByType);
 export { router as staffRoute };

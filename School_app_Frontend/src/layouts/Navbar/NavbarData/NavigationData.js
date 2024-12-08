@@ -13,7 +13,7 @@ import {
   FaDollarSign,
   FaCogs,
   FaFileUpload,
-  FaBus
+  FaBus,
 } from "react-icons/fa";
 import { BsDatabaseFillUp } from "react-icons/bs";
 import { FaIdCard, FaRegCircle } from "react-icons/fa6";
@@ -407,6 +407,12 @@ export const navigation = [
       {
         name: "Monthly Fees Payment",
         to: "/school/monthly-fees-payment",
+        icon: FaRegCircle,
+        roles: ["Admin"],
+      },
+      {
+        name: "Add Previous Fees",
+        to: "/school/previous-fees",
         icon: FaRegCircle,
         roles: ["Admin"],
       },

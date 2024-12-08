@@ -84,6 +84,7 @@ import StaffBulkData from "./pages/UploadFiles/StaffBulkData.jsx";
 import AddTransport from "./pages/Transport/AddTransport.jsx";
 import AddRoutes from "./pages/Transport/AddRoutes.jsx";
 import AssignTransport from "./pages/Transport/AssignTransport.jsx";
+import PreviousYearFee from "./pages/Fees/PreviousYearFee.jsx";
 
 const App = () => {
   const { userRole, authToken, loading } = useAuth();
@@ -789,6 +790,14 @@ const App = () => {
             element={
               <RoleBasedAccess allowedRoles={["Admin"]}>
                 <AssignTransport />
+              </RoleBasedAccess>
+            }
+          />
+          <Route
+            path="/school/previous-fees"
+            element={
+              <RoleBasedAccess allowedRoles={["Admin"]}>
+                <PreviousYearFee />
               </RoleBasedAccess>
             }
           />

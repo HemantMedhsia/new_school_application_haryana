@@ -1,6 +1,7 @@
 import express from "express";
 import {
     addPaymentsAndDiscounts,
+    addPreviousYearFeeToStudent,
     getAllStudentFeeDetails,
     getDueFeeListPerClassMonth,
     getStudentAndSiblingFeeSummary,
@@ -22,5 +23,6 @@ router.get(
 );
 
 router.post("/siblings-fees", payAllSiblingStudentFees);
+router.post("/add-student-previous-balance", addPreviousYearFeeToStudent);
 
 export { router as studentFeesRouter };
