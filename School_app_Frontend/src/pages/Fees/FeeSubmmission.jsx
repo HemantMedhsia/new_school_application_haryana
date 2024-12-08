@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -9,26 +9,23 @@ const FeeSubmission = () => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [totalFees, setTotalFees] = useState(0);
   const [paymentHistory, setPaymentHistory] = useState([]);
-  const [tran, setTran] = useState();
+  const [tran, setTran] = useState(0);
 
   // Mapping between feeHeader identifiers and display names
-  const feeHeaderMap = {
+  const feeHeaderMap = useMemo(() => ({
     tuitionFee: "Tuition Fee",
     admissionFee: "Admission Fee",
     annualFee: "Annual Fee",
     otherFee: "Other Fee",
-    previousBalance: "Previous Year Balance",
-    transportFee: `Transport Fee monthly (${tran/11}) `,
-  };
+    previousBalance: "Previous Balance",
+    transportFee: `Transport Fee `,
+  }), [tran]);
 
-  const feeHeaderMapReverse = {
-    "Tuition Fee (Monthly)": "tuitionFee",
-    "Admission Fee": "admissionFee",
-    "Annual Fee": "annualFee",
-    "Other Fee": "otherFee",
-    previousBalance: "Previous Year Balance",
-    transportFee: "Transport Fee",
-  };
+  useEffect(() => {
+    if (isNaN(tran)) {
+      fetchStudentFeeDetails();
+    }
+  }, [tran]);
 
   useEffect(() => {
     fetchStudentFeeDetails();
