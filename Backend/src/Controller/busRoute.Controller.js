@@ -2,6 +2,8 @@ import wrapAsync from "../Utils/wrapAsync.js";
 import { ApiResponse } from "../Utils/responseHandler.js";
 import { ApiError } from "../Utils/errorHandler.js";
 import { BusRoute } from "../Models/busRoute.Model.js";
+import { FeeGroup } from "../Models/feeGroup.Model.js";
+import { StudentFee } from "../Models/studentFees.Model.js";
 
 export const createBusRoute = wrapAsync(async (req, res, next) => {
     const { routeName, routeFare, routeLengthOneSide } = req.body;
@@ -152,8 +154,30 @@ export const AddStudentToRoute = wrapAsync(async (req, res, next) => {
     busRoute.student.push({ studentId, busNumber, roundNumber });
     let busRouteadd = await busRoute.save();
 
+    const studentFee = await StudentFee.findOne({ student: studentId });
+    if (!studentFee) {
+        return res
+            .status(404)
+            .json(new ApiResponse(404, null, "No Student Fee found"));
+    }
+
+    const feeGroup = await FeeGroup.findById(studentFee.feeGroup);
+
+    if (!feeGroup) {
+        return res
+            .status(404)
+            .json(new ApiResponse(404, null, "No Fee Group found"));
+    }
+
+    feeGroup.fees.transportFee = busRoute.routeFare * 11;
+    await feeGroup.save();
+
     res.status(200).json(
-        new ApiResponse(200, busRouteadd, "Student added to Route successfully")
+        new ApiResponse(
+            200,
+            { busRouteadd, feeGroup },
+            "Student added to Route successfully"
+        )
     );
 });
 
@@ -234,7 +258,6 @@ export const getAllStudentByBusNumber = wrapAsync(async (req, res, next) => {
         },
         select: "firstName mobileNumber currentClass admissionNo lastName",
     });
-
 
     console.log(busRoutes);
 

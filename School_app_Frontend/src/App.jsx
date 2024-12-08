@@ -84,6 +84,7 @@ import StaffBulkData from "./pages/UploadFiles/StaffBulkData.jsx";
 import AddTransport from "./pages/Transport/AddTransport.jsx";
 import AddRoutes from "./pages/Transport/AddRoutes.jsx";
 import AssignTransport from "./pages/Transport/AssignTransport.jsx";
+import PreviousYearFee from "./pages/Fees/PreviousYearFee.jsx";
 
 const App = () => {
   const { userRole, authToken, loading } = useAuth();
@@ -792,6 +793,14 @@ const App = () => {
               </RoleBasedAccess>
             }
           />
+          <Route
+            path="/school/previous-fees"
+            element={
+              <RoleBasedAccess allowedRoles={["Admin"]}>
+                <PreviousYearFee />
+              </RoleBasedAccess>
+            }
+          />f
         </Route>
         <Route path="*" element={<PyramidLoader />} />
         <Route path="/error" element={<AnimatedErrorPage />} />

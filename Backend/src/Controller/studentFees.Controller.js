@@ -31,7 +31,8 @@ export const addPaymentsAndDiscounts = wrapAsync(async (req, res) => {
         }
 
         const totalFees = Object.values(feeGroup.fees).reduce(
-            (acc, fee) => acc + Number(fee),
+            // (acc, fee) => acc + Number(fee),
+            (acc, fee) => acc + (fee || 0),
             0
         );
 
@@ -968,4 +969,35 @@ export const payAllSiblingStudentFees = wrapAsync(async (req, res) => {
             "Payment successful"
         )
     );
+});
+
+export const addPreviousYearFeeToStudent = wrapAsync(async (req, res) => {
+    const { studentId, previousBalance } = req.body;
+
+    const studentFee = await StudentFee.findOne({ student: studentId });
+    if (!studentFee) {
+        return res
+            .status(404)
+            .json({ message: "Student fee record not found" });
+    }
+
+    const feeGroup = await FeeGroup.findById(studentFee.feeGroup);
+
+    if (!feeGroup) {
+        return res
+            .status(404)
+            .json({ message: "Fee group not found for the student" });
+    }
+
+    feeGroup.fees.previousBalance = previousBalance;
+    await feeGroup.save();
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                feeGroup,
+                "Previous year fee added successfully"
+            )
+        );
 });

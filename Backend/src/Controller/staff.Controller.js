@@ -361,3 +361,13 @@ export const uploadBulkStaffData = wrapAsync(async (req, res) => {
             );
     }
 });
+
+export const getStaffByType = wrapAsync(async (req, res) => {
+    const { type } = req.params;
+
+    const staff = await Staff.find({
+        type: type,
+    });
+
+    return res.status(200).json(new ApiResponse(200, staff));
+});
